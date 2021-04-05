@@ -9,6 +9,8 @@
 
 #define HEX 16
 #define DEC 10
+#define WITHOUT_SPACES 0
+#define WITH_SPACES 1
 
 #define O std::wcout<<
 #define I std::wcin>>
@@ -106,23 +108,14 @@ void padding(wchar_t* plain_text){
 
 
 void keygen(wchar_t* key) {
-    *(key + 0) = 100;
-    *(key + 1) = 200;
-    *(key + 2) = 300;
-    *(key + 3) = 400;
-    *(key + 4) = 500;
-    *(key + 5) = 600;
-    *(key + 6) = 700;
-    *(key + 7) = 800;
-
-    //*(key + 0) = 1;
-    //*(key + 1) = 2;
-    //*(key + 2) = 3;
-    //*(key + 3) = 4;
-    //*(key + 4) = 5;
-    //*(key + 5) = 6;
-    //*(key + 6) = 7;
-    //*(key + 7) = 8;
+    *(key + 0) = 5464;
+    *(key + 1) = 27800;
+    *(key + 2) = 29584;
+    *(key + 3) = 1784;
+    *(key + 4) = 50330;
+    *(key + 5) = 60640;
+    *(key + 6) = 3;
+    *(key + 7) = 5;
 }
 void key_rounds_gen_enc(wchar_t* key, wchar_t** key_rounds) {
     int8_t counter = 0;
@@ -289,19 +282,19 @@ std::wstring encrypt_decrypt(wchar_t* key, wchar_t* plain_text, bool enc_dec) {
     wchar_t** key_rounds = allocate2Darray(9, 6);
     #define KEY_PARAM key_rounds, 9, 6
 
-    keygen(key);
+    //keygen(key);
     if (enc_dec == ENCRYPT) {
         key_rounds_gen_enc(key, key_rounds);
-        print2Darray(KEY_PARAM, DEC);
+        //print2Darray(KEY_PARAM, DEC);
         O std::endl E;
-        print2Darray(KEY_PARAM, HEX);
+        //print2Darray(KEY_PARAM, HEX);
     }
     else {
         key_rounds_gen_dec(key, key_rounds);
-        print2Darray(KEY_PARAM, HEX);
+        //print2Darray(KEY_PARAM, HEX);
     }
     //print2Darray(KEY_PARAM);
-    printWstringAs_UINT16_T(plain_text, HEX);
+    //printWstringAs_UINT16_T(plain_text, HEX);
 
     int _txtLen = length(plain_text);
     int requiredforPad = 4 - _txtLen % 4;
@@ -310,7 +303,7 @@ std::wstring encrypt_decrypt(wchar_t* key, wchar_t* plain_text, bool enc_dec) {
     wchar_t buffer[4];
     std::wstring cipher_text = L"";
     //------------
-    int cnt = 0;
+    /*int cnt = 0;
     buffer[0] = *(plain_text + cnt);
     buffer[1] = *(plain_text + cnt + 1);
     buffer[2] = *(plain_text + cnt + 2);
@@ -324,10 +317,10 @@ std::wstring encrypt_decrypt(wchar_t* key, wchar_t* plain_text, bool enc_dec) {
     buffer[2] = _sum(buffer[2], key_rounds[8][2]);
     buffer[3] = _mul(buffer[3], key_rounds[8][3]);
 
-    cipher_text = cipher_text + buffer[0] + buffer[1] + buffer[2] + buffer[3];
+    cipher_text = cipher_text + buffer[0] + buffer[1] + buffer[2] + buffer[3];*/
 
 
-   /* for (int cnt = 0; cnt < _txtLen + requiredforPad; cnt++) {
+    for (int cnt = 0; cnt < _txtLen + requiredforPad; cnt++) {
         if (cnt % 4 == 0) {
             buffer[0] = *(plain_text + cnt);
             buffer[1] = *(plain_text + cnt + 1); 
@@ -345,8 +338,8 @@ std::wstring encrypt_decrypt(wchar_t* key, wchar_t* plain_text, bool enc_dec) {
             cipher_text = cipher_text + buffer[0] + buffer[1] + buffer[2] + buffer[3];
 
         }
-    }*/
-    return cipher_text;
+    }
+    return cipher_text+L'\0';
     deallocate2Darray(key_rounds, 9);
 }
 #pragma region array functions
@@ -402,15 +395,21 @@ void printWstringAs_UINT16_T(wchar_t* plain_text, int8_t CS) {
     O "\n";
     O "\n";
 }
-void printWstringAs_UINT16_T(std::wstring str, int8_t CS) {
+void printWstringAs_UINT16_T(std::wstring str,int8_t len, int8_t CS, int8_t spaces=WITHOUT_SPACES) {
     O "\n";
     O "\n";
-    for (int i = 0; i < str.length(); i++) {
+    for (int i = 0; i < len; i++) {
         if (CS == HEX) {
-            O inHex((uint16_t)str[i]) << "\t";
+            if(spaces==WITHOUT_SPACES)
+                O L"0x"<<inHex((uint16_t)str[i]) << "\t";
+            else
+                O inHex((uint16_t)str[i]);
         }
         else {
-            O(uint16_t)str[i] << "\t";
+            if (spaces == WITHOUT_SPACES)
+                O L"0x"<<(uint16_t)str[i];
+            else
+                O(uint16_t)str[i] << "\t";
         }
         if (i % 8 == 0 && i != 0) {
             O "\n";
@@ -497,30 +496,45 @@ std::wstring inHex(int number) {
 int main()
 {
     //_setmode(_fileno(stdout), _O_U16TEXT);
+    //wchar_t message[12] = { 45 , 12, 64, 1001, 45 , 11, 65, 1001, 44 , 13, 63, 15000 };/*
+    /*wchar_t message[4] = { 0 , 1, 2, 3 };*/
+
 
     wchar_t* key = new wchar_t[8];
-    wchar_t message[4] = { 1330 , 2660, 5320, 6650 };/*
-    wchar_t message[4] = { 0 , 1, 2, 3 };*/
+    O "Enter secret key" E
+    std::wstring _key = L"";
+    std::wcin>> _key;
+    for (int8_t i = 0; i < 8; i++) {
+        key[i] = _key[i];
+    }
+    printWstringAs_UINT16_T(std::wstring(key), 8, DEC, WITH_SPACES);
 
-
-    //std::wcin.getline(message, 1024);
+    wchar_t* message = new wchar_t[1024];
+    std::wstring _message = L"";
+    O "Enter message for encoding" E
+    std::wcin >> _message;
+    for (int8_t i = 0; i < _message.length(); i++) {
+        message[i] = _message[i];
+    }
     
-
     //O _mul(8629, 3584) E
     //-----------MAINPROGS
     O "Plain text\t:" E;
-    printWstringAs_UINT16_T(std::wstring(message), DEC);
+    printWstringAs_UINT16_T(std::wstring(message), std::wstring(message).length(), DEC, WITH_SPACES);
     
     std::wstring cipher_text = encrypt_decrypt(key, message, ENCRYPT);
 
     O "Ciphered text\t:" E;
-    printWstringAs_UINT16_T(cipher_text, HEX);;
-
+    printWstringAs_UINT16_T(cipher_text, std::wstring(message).length(), HEX, WITHOUT_SPACES);;
+    //cipher_text = cipher_text.erase(12, cipher_text.length() - 16);
 
     std::wstring decrypted_text = encrypt_decrypt(key, &cipher_text[0], DECRYPT);
-
+   // decrypted_text = decrypted_text.erase(12, cipher_text.length() - 16);
     O "Decrypted text\t:" E;
-    printWstringAs_UINT16_T(decrypted_text, HEX);
+    printWstringAs_UINT16_T(decrypted_text, std::wstring(message).length(), HEX , WITHOUT_SPACES);
+    printWstringAs_UINT16_T(decrypted_text, std::wstring(message).length(), DEC , WITH_SPACES);
+
+    O decrypted_text E;
     //__________________________________________________________________________________________________
 
     
