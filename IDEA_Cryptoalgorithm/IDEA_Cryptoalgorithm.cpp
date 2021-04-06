@@ -33,7 +33,7 @@ entermessage:
     std::wstring cipher_text = encrypt_decrypt(key, message, ENCRYPT);
     std::wstring decrypted_text = encrypt_decrypt(key, &cipher_text[0], DECRYPT);
 
-    int8_t toFile = TO_FILE;
+    int8_t toFile = TO_CONSOLE;
     O "Ciphered text\t:" E;
     printWstringAs_UINT16_T(cipher_text, HEX, WITHOUT_SPACES, toFile);
 
