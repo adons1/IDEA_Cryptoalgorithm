@@ -77,6 +77,13 @@ int length(wchar_t* message) {
     }
     return i;
 }
+int length(char* message) {
+    int16_t i = 0;
+    while (message[i]) {
+        i++;
+    }
+    return i;
+}
 
 void keygen(wchar_t* key) {
     *(key + 0) = 1;
@@ -88,11 +95,8 @@ void keygen(wchar_t* key) {
     *(key + 6) = 7;
     *(key + 7) = 8;
 }
-void key_rounds_gen_enc(wchar_t* encryptionkey, wchar_t** key_rounds) {
-    wchar_t key[9];
-    for (int8_t i = 0; i < 8; i++) {
-        key[i] = encryptionkey[i];
-    }
+void key_rounds_gen_enc(wchar_t* key, wchar_t** key_rounds) {
+    
     int8_t counter = 0;
     int8_t key_ptr = 0;
     for (int8_t i = 0; i < 9; i++) {
@@ -162,8 +166,7 @@ void key_rounds_gen_dec(wchar_t* key, wchar_t** key_rounds) {
             }
         }
     }
-    std::swap(key_rounds[7][1], key_rounds[7][2]);
-    for (int8_t i = 1; i < 7; i++) {
+    for (int8_t i = 1; i < 8; i++) {
         std::swap(key_rounds[i][1], key_rounds[i][2]);
     }
 }
@@ -187,27 +190,31 @@ void round(wchar_t* buffer, wchar_t** key_rounds, int8_t iterationNmb) {
     buffer[0] = _xor(A, _mul(_sum(F, _mul(_E, K[4])), K[5]));
     buffer[1] = _xor(C, _mul(_sum(F, _mul(_E, K[4])), K[5]));
     buffer[2] = _xor(B, _sum(_mul(_E, K[4]), _mul(_sum(F, _mul(_E, K[4])), K[5])));
-    buffer[3] = _xor(D, _sum(_mul(_E, K[4]), _mul(_sum(F, _mul(_E, K[4])), K[5])));
-
-    if (iterationNmb == 7) {
-        int c = buffer[1];
-        buffer[1] = buffer[2];
-        buffer[2] = c;
-    }
+    buffer[3] = _xor(D, _sum(_mul(_E, K[4]), _mul(_sum(F, _mul(_E, K[4])), K[5]))); 
 }
 std::wstring encrypt_decrypt(wchar_t* key, wchar_t* plain_text, bool enc_dec) {
-    wchar_t** key_rounds = allocate2Darray(9, 6);
 #define KEY_PARAM key_rounds, 9, 6
+
+    wchar_t** key_rounds = allocate2Darray(9, 6);
+
+#pragma region keycopy
+    wchar_t key_copy[9];
+    for (int8_t i = 0; i < 8; i++) {
+        key_copy[i] = key[i];
+    }
+#pragma endregion 
+
     if (enc_dec == ENCRYPT) {
-        key_rounds_gen_enc(key, key_rounds);
+        
+        key_rounds_gen_enc(key_copy, key_rounds);
     }
     else {
-        key_rounds_gen_dec(key, key_rounds);
+        key_rounds_gen_dec(key_copy, key_rounds);
     }
     int _txtLen = length(plain_text);
     int requiredforPad = 4 - _txtLen % 4;
 
-    int inxbuffer = 0;
+
     wchar_t buffer[4];
     std::wstring cipher_text = L"";
     for (int cnt = 0; cnt < _txtLen + requiredforPad; cnt++) {
@@ -219,9 +226,12 @@ std::wstring encrypt_decrypt(wchar_t* key, wchar_t* plain_text, bool enc_dec) {
             for (int8_t i = 0; i < 8; i++) {
                 round(buffer, key_rounds, i);
             }
+
+            wchar_t buffer1save = buffer[1];
+
             buffer[0] = _mul(buffer[0], key_rounds[8][0]);
-            buffer[1] = _sum(buffer[1], key_rounds[8][1]);
-            buffer[2] = _sum(buffer[2], key_rounds[8][2]);
+            buffer[1] = _sum(buffer[2], key_rounds[8][1]);
+            buffer[2] = _sum(buffer1save, key_rounds[8][2]);
             buffer[3] = _mul(buffer[3], key_rounds[8][3]);
 
             cipher_text = cipher_text + buffer[0] + buffer[1] + buffer[2] + buffer[3];
