@@ -77,6 +77,13 @@ int length(wchar_t* message) {
     }
     return i;
 }
+int length(char* message) {
+    int16_t i = 0;
+    while (message[i]) {
+        i++;
+    }
+    return i;
+}
 
 void keygen(wchar_t* key) {
     *(key + 0) = 1;
