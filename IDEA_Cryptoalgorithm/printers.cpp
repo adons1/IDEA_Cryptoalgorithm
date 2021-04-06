@@ -10,12 +10,6 @@
 
 #define TO_FILE 1
 #define TO_CONSOLE 0
-//
-//#define O std::wcout<<
-//#define I std::wcin>>
-//#define E <<std::endl;
-
-
 
 #pragma region array functions
 wchar_t** allocate2Darray(int8_t n, int8_t m) {

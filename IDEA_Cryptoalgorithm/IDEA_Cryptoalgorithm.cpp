@@ -3,26 +3,13 @@
 #include "IdeaAlgorithm.h"
 #include "printers.h"
 
-#define ENCRYPT true
-#define DECRYPT false
+
 #define MAX_TEXT_SIZE 4096
 
-#define HEX 16
-#define DEC 10
 
-#define WITH_SPACES  1
-#define WITHOUT_SPACES  0
-
-#define TO_FILE 1
-#define TO_CONSOLE 0
-
-#define O std::wcout<<
-#define I std::wcin>>
-#define E <<std::endl;
 
 int main()
 {
-
     wchar_t key[9];
     wchar_t message[MAX_TEXT_SIZE];
 
@@ -51,7 +38,6 @@ entermessage:
     printWstringAs_UINT16_T(cipher_text, HEX, WITHOUT_SPACES, toFile);
 
     O "Decrypted text\t:" E;
-    O decrypted_text.length() E;
     int c=0;
     while (decrypted_text[c]!='\0') {
         O decrypted_text[c];

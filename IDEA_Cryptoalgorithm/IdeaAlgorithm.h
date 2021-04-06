@@ -1,3 +1,6 @@
+#define ENCRYPT true
+#define DECRYPT false
+
 int _mul(int x, int y);
 int _sum(int x, int y);
 int _xor(int x, int y);
