@@ -10,12 +10,6 @@
 
 #define TO_FILE 1
 #define TO_CONSOLE 0
-//
-//#define O std::wcout<<
-//#define I std::wcin>>
-//#define E <<std::endl;
-
-
 
 #pragma region array functions
 wchar_t** allocate2Darray(int8_t n, int8_t m) {
@@ -35,7 +29,7 @@ void print2Darray(wchar_t** key, int8_t n, int8_t m, int8_t CS) {
     for (int8_t i = 0; i < n; i++) {
         for (int8_t j = 0; j < m; j++) {
             if (CS == HEX) {
-                std::wcout << inHex(*(*(key + i) + j)) << "\t";
+                std::wcout << inHex(*(*(key + i) + j), 4) << "\t";
             }
             else {
                 std::cout << *(*(key + i) + j) << "\t";
@@ -60,9 +54,9 @@ void printWstringAs_UINT16_T(std::wstring str, int8_t CS, int8_t spaces, int8_t 
         for (int i = 0; i < str.length(); i++) {
             if (CS == HEX) {
                 if (spaces == WITHOUT_SPACES)
-                    O inHex((uint16_t)str[i]);
+                    O inHex((uint16_t)str[i], 4);
                 else
-                    O inHex((uint16_t)str[i]) << "\t";
+                    O inHex((uint16_t)str[i], 4) << "\t";
             }
             else {
                 if (spaces == WITHOUT_SPACES)
@@ -89,9 +83,9 @@ void printWstringAs_UINT16_T(std::wstring str, int8_t CS, int8_t spaces, int8_t 
         for (int i = 0; i < str.length(); i++) {
             if (CS == HEX) {
                 if (spaces == WITHOUT_SPACES)
-                    O inHex((uint16_t)str[i]);
+                    O inHex((uint16_t)str[i], 4);
                 else
-                    O inHex((uint16_t)str[i]) << "\t";
+                    O inHex((uint16_t)str[i], 4) << "\t";
             }
             else {
                 if (spaces == WITHOUT_SPACES)
@@ -118,7 +112,13 @@ void reverseStr(std::wstring& str)
     for (int i = 0; i < n / 2; i++)
         std::swap(str[i], str[n - i - 1]);
 }
-std::wstring inHex(int number) {
+std::wstring normalize(std::wstring val, int8_t normalize) {
+    while (val.length() < normalize) {
+        val = val + L"0";
+    }
+    return val;
+}
+std::wstring inHex(int number, int8_t norma = 0) {
     int x = number;
     int y = 0;
 
@@ -178,11 +178,67 @@ std::wstring inHex(int number) {
         }
         x = x / 16;
     }
-
-    while (result.length() < 4){
-        result = result + L"0";
+    if (norma != 0) {
+        result = normalize(result, 4);
     }
 
     reverseStr(result);
+    return result;
+}
+wchar_t inDec(std::wstring str) {
+    int i = 0;
+    int result = 0;
+    while (i < 4) {
+        switch (str[i]) {
+        case L'0':
+            break;
+        case L'1':
+            result += pow(16, (3-i));
+            break;
+        case L'2':
+            result += 2*pow(16, (3 - i));
+            break;
+        case L'3':
+            result += 3*pow(16, (3 - i));
+            break;
+        case L'4':
+            result += 4*pow(16, (3 - i));
+            break;
+        case L'5':
+            result += 5*pow(16, (3 - i));
+            break;
+        case L'6':
+            result += 6*pow(16, (3 - i));
+            break;
+        case L'7':
+            result += 7*pow(16, (3 - i));
+            break;
+        case L'8':
+            result += 8*pow(16, (3 - i));
+            break;
+        case L'9':
+            result += 9*pow(16, (3 - i));
+            break;
+        case L'a':
+            result += 10*pow(16, (3 - i));
+            break;
+        case L'b':
+            result += 11*pow(16, (3 - i));
+            break;
+        case L'c':
+            result += 12*pow(16, (3 - i));
+            break;
+        case L'd':
+            result += 13*pow(16, (3 - i));
+            break;
+        case L'e':
+            result += 14*pow(16, (3 - i));
+            break;
+        case L'f':
+            result += 15*pow(16, (3 - i));
+            break;
+        }
+        i++;
+    }
     return result;
 }
