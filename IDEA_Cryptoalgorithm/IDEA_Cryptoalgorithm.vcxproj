@@ -139,7 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="IdeaAlgorithm.cpp" />
     <ClCompile Include="IDEA_Cryptoalgorithm.cpp" />
+    <ClCompile Include="printers.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IdeaAlgorithm.h" />
+    <ClInclude Include="printers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
