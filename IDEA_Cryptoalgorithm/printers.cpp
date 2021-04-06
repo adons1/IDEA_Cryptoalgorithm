@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "printers.h"
 
 #define HEX 16
@@ -9,10 +10,10 @@
 
 #define TO_FILE 1
 #define TO_CONSOLE 0
-
-#define O std::wcout<<
-#define I std::wcin>>
-#define E <<std::endl;
+//
+//#define O std::wcout<<
+//#define I std::wcin>>
+//#define E <<std::endl;
 
 
 
@@ -44,59 +45,68 @@ void print2Darray(wchar_t** key, int8_t n, int8_t m, int8_t CS) {
         std::cout << "\n";
     }
 }
-void printWstringAs_UINT16_T(wchar_t* plain_text, int8_t CS, int8_t spaces, int8_t toFile) {
-    std::wstring str(plain_text);
-    O "\n";
-    O "\n";
-    int devider = 16;
-    if (spaces == WITHOUT_SPACES)
-        O "0x";
-    for (int i = 0; i < str.length(); i++) {
-        if (CS == HEX) {
-            if (spaces == WITHOUT_SPACES)
-                O inHex((uint16_t)str[i]);
-            else
-                O inHex((uint16_t)str[i]) << "\t";
-        }
-        else {
-            if (spaces == WITHOUT_SPACES)
-                O(uint16_t)str[i];
-            else
-                O(uint16_t)str[i] << "\t";
-        }
-        if (i % devider == 0 && i != 0) {
-            O "\n";
-        }
-    }
-    O "\n";
-    O "\n";
-}
 void printWstringAs_UINT16_T(std::wstring str, int8_t CS, int8_t spaces, int8_t toFile) {
-    
-    O "\n";
-    O "\n";
-    int devider = 16;
-    if (spaces == WITHOUT_SPACES)
-        O "0x";
-    for (int i = 0; i < str.length(); i++) {
-        if (CS == HEX) {
-            if (spaces == WITHOUT_SPACES)
-                O inHex((uint16_t)str[i]);
-            else
-                O inHex((uint16_t)str[i]) << "\t";
+    if (toFile == TO_FILE) {
+        std::wofstream fout("cipher_text.txt");
+
+        #define O fout<< 
+        #define E fout<< 
+
+        O L"\n";
+        O L"\n";
+        int devider = 15;
+        if (spaces == WITHOUT_SPACES)
+            O "0x";
+        for (int i = 0; i < str.length(); i++) {
+            if (CS == HEX) {
+                if (spaces == WITHOUT_SPACES)
+                    O inHex((uint16_t)str[i]);
+                else
+                    O inHex((uint16_t)str[i]) << "\t";
+            }
+            else {
+                if (spaces == WITHOUT_SPACES)
+                    O(uint16_t)str[i];
+                else
+                    O(uint16_t)str[i] << "\t";
+            }
+            if ((i % devider == 0) && (i != 0)) {
+                O "\n";
+            }
         }
-        else {
-            if (spaces == WITHOUT_SPACES)
-                O(uint16_t)str[i];
-            else
-                O(uint16_t)str[i] << "\t";
-        }
-        if (i % devider == 0 && i != 0) {
-            O "\n";
-        }
+        O "\n";
+        O "\n";
     }
-    O "\n";
-    O "\n";
+    else {
+        #define O std::wcout<< 
+        #define E <<std::endl 
+
+        O L"\n";
+        O L"\n";
+        int devider = 15;
+        if (spaces == WITHOUT_SPACES)
+            O "0x";
+        for (int i = 0; i < str.length(); i++) {
+            if (CS == HEX) {
+                if (spaces == WITHOUT_SPACES)
+                    O inHex((uint16_t)str[i]);
+                else
+                    O inHex((uint16_t)str[i]) << "\t";
+            }
+            else {
+                if (spaces == WITHOUT_SPACES)
+                    O(uint16_t)str[i];
+                else
+                    O(uint16_t)str[i] << "\t";
+            }
+            if ((i % devider == 0) && (i != 0)) {
+                O "\n";
+            }
+        }
+        O "\n";
+        O "\n";
+    }
+    
 }
 #pragma endregion
 
@@ -168,6 +178,11 @@ std::wstring inHex(int number) {
         }
         x = x / 16;
     }
+
+    while (result.length() < 4){
+        result = result + L"0";
+    }
+
     reverseStr(result);
     return result;
 }

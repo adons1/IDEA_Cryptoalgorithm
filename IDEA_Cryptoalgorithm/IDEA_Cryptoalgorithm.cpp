@@ -45,8 +45,10 @@ entermessage:
 
     std::wstring cipher_text = encrypt_decrypt(key, message, ENCRYPT);
     std::wstring decrypted_text = encrypt_decrypt(key, &cipher_text[0], DECRYPT);
+
+    int8_t toFile = TO_FILE;
     O "Ciphered text\t:" E;
-    printWstringAs_UINT16_T(cipher_text, HEX, WITHOUT_SPACES, TO_CONSOLE);
+    printWstringAs_UINT16_T(cipher_text, HEX, WITHOUT_SPACES, toFile);
 
     O "Decrypted text\t:" E;
     O decrypted_text.length() E;
@@ -56,6 +58,9 @@ entermessage:
         c++;
     }
     
+    if (toFile == TO_FILE) {
+        system("cipher_text.txt");
+    }
     std::wcout <<L"\n\n"<< std::endl;
     system("pause");
 }
