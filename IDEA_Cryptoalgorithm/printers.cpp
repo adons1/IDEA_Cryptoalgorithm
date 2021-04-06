@@ -242,3 +242,42 @@ wchar_t inDec(std::wstring str) {
     }
     return result;
 }
+wchar_t* readHexFromFile(char* path, int* begin, int* end) {
+    std::wifstream fin(path);
+    std::wstring cipher_text = L"";
+    std::wstring cipher_text_pure = L"";
+    fin >> cipher_text;
+
+    int i = 0;
+    while (cipher_text[i] != L'0' && cipher_text[i] != L'x') {
+        i++;
+    }
+    *begin = i;
+    i = *begin + 2;
+    while ((cipher_text[i] != L' ' || cipher_text[i] != L'\n' || cipher_text[i] != L'\t') && i != cipher_text.length()) {
+        cipher_text_pure = cipher_text_pure + cipher_text[i];
+        i++;
+    }
+    *end = i;
+    O L"Cryptogramm:\t";
+    O cipher_text_pure E;
+
+    i = 0;
+    int cipher_text_pure_len = cipher_text_pure.length();
+
+#define ctp cipher_text_pure
+
+    wchar_t* cipher_arr = new wchar_t[cipher_text_pure_len / 4];
+    while (i < cipher_text_pure_len) {
+        if (i % 4 == 0) {
+            std::wstring val = L"";
+            val = val + cipher_text_pure[i]
+                + cipher_text_pure[i + 1]
+                + cipher_text_pure[i + 2]
+                + cipher_text_pure[i + 3];
+            cipher_arr[i / 4] = inDec(val);
+        }
+        i++;
+    }
+    return cipher_arr;
+}

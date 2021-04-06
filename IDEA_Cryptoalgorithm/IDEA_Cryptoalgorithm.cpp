@@ -7,7 +7,7 @@
 #define MAX_TEXT_SIZE 4096
 
 
-void standart_scenario() {
+void standart_scenario(int8_t toFile) {
     wchar_t key[9];
     wchar_t message[MAX_TEXT_SIZE];
 
@@ -32,7 +32,7 @@ entermessage:
 
     std::wstring decrypted_text = encrypt_decrypt(key, &cipher_text[0], DECRYPT);
 
-    int8_t toFile = TO_CONSOLE;
+    
     O "Ciphered text\t:" E;
     printWstringAs_UINT16_T(cipher_text, HEX, WITHOUT_SPACES, toFile);
 
@@ -48,7 +48,7 @@ entermessage:
     }
     std::wcout << L"\n\n" << std::endl;
 }
-void decrypt_from_file() {
+std::wstring decrypt_from_file() {
     wchar_t key[9];
     char* path=new char[128];
 
@@ -63,52 +63,24 @@ enterkey:
         O L"Wrong key length!" E
             goto enterkey;
     }
-    std::wifstream fin(path);
-    std::wstring cipher_text = L"";
-    std::wstring cipher_text_pure = L"";
-    fin >> cipher_text;
-
-    int i = 0;
-    while (cipher_text[i] != L'0' && cipher_text[i] != L'x') {
-        i++;
-    }
-    int begin = i;
-    i = begin+2;
-    while ((cipher_text[i] != L' ' || cipher_text[i] != L'\n' || cipher_text[i] != L'\t')&&i!=cipher_text.length()) {
-        cipher_text_pure = cipher_text_pure + cipher_text[i];
-        i++;
-    }
-    int end = i;
-    O L"Cryptogramm:\t";
-    O cipher_text_pure E;
-
-    i = 0;
-    int cipher_text_pure_len = cipher_text_pure.length();
-
-#define ctp cipher_text_pure
-
-    wchar_t* cipher_arr = new wchar_t[cipher_text_pure_len/4];
-    while (i < cipher_text_pure_len) {
-        if (i % 4 == 0) {
-            std::wstring val = L"";
-            val = val   + cipher_text_pure[i] 
-                        + cipher_text_pure[i + 1] 
-                        + cipher_text_pure[i + 2] 
-                        + cipher_text_pure[i + 3];
-            cipher_arr[i / 4] = inDec(val);
-        }
-        i++;
-    }
+   
+    int* begin = new int();
+    int* end = new int();
+    wchar_t* cipher_arr = readHexFromFile(path, begin, end);
 
     std::wstring decrypted_text = encrypt_decrypt(key, cipher_arr, DECRYPT);
     O std::endl;
     O "Decrypted text\t:";
     int c = 0;
-    while (decrypted_text[c] != '\0') {
-        O decrypted_text[c];
+    while ((decrypted_text[c] != '\0')&&((c<(*end-*begin)/4)+2)) {
+        if((uint16_t)decrypted_text[c]>255)
+            O inHex((uint16_t)decrypted_text[c], 4) <<" ";
+        else    
+            O decrypted_text[c];
+
         c++;
     }
-    
+    return decrypted_text;
 } 
 
 int main()
